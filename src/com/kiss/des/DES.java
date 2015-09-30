@@ -34,7 +34,7 @@ public class DES {
 	}
 	
 	private DES() {
-		init("this is secret key");
+		init("this is des secret key");
 	}
 
 	public void init(String key) {

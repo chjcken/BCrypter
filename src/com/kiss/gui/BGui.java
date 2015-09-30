@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import com.kiss.aes.AES;
 import com.kiss.des.DES;
 import com.kiss.rsa.RSA;
 
@@ -38,7 +39,7 @@ public class BGui {
 	private JMenuItem mntmExit;
 	private JPanel panelDES;
 	private JPanel panelRSA;
-	private JPanel panelSomeAlg;
+	private JPanel panelAES;
 	private JTextField txtDESInput;
 	private JButton btnDESInput;
 	private JLabel lblInput;
@@ -51,7 +52,7 @@ public class BGui {
 	private JFileChooser fc;
 	private JLabel lblStatus;
 	private JLabel lblSecretKey;
-	private JTextField txtKey;
+	private JTextField txtDESKey;
 	private JButton btnDESKeyGenerate;
 	private JButton btnRSAEncrypt;
 	private JButton btnRSADecrypt;
@@ -76,6 +77,8 @@ public class BGui {
 	private JButton btnRSAKeyGenerate;
 
 	private final String FILE_SEPARATOR = System.getProperty("file.separator");
+	private final String DESKTOP_PATH = System.getProperty("user.home") + FILE_SEPARATOR + "Desktop";
+	
 	private JTabbedPane tabbedPane_2;
 	private JPanel panelRSASignatureSign;
 	private JPanel panelRSASignatureVerify;
@@ -90,12 +93,23 @@ public class BGui {
 	private JButton button_2;
 	private JButton btnRSASign;
 	private JLabel lblSignatureFileInput;
-	private JTextField textField;
-	private JTextField textField_3;
+	private JTextField txtRSASignatureVerifyOriginInput;
+	private JTextField txtRSASignatureVerifyInput;
 	private JLabel lblOriginalFileInput;
 	private JButton button;
 	private JButton button_3;
+	private JButton btnRSAVerify;
+	private JLabel label_2;
+	private JTextField txtAESKey;
 	private JButton button_4;
+	private JTextField txtAESInput;
+	private JLabel label_4;
+	private JLabel label_5;
+	private JTextField txtAESOutput;
+	private JButton button_5;
+	private JButton button_6;
+	private JButton btnAESEncrypt;
+	private JButton btnAESDecrypt;
 
 	/**
 	 * Launch the application.
@@ -118,9 +132,8 @@ public class BGui {
 	 */
 	public BGui() {
 		initialize();
-		this.lblStatus.setText("stt");
-		this.fc = new JFileChooser(System.getProperty("user.home")
-				+ FILE_SEPARATOR + "Desktop") {
+		this.lblStatus.setText("");
+		this.fc = new JFileChooser(DESKTOP_PATH) {
 			/**
 			 * 
 			 */
@@ -176,7 +189,8 @@ public class BGui {
 
 		this.btnDESInput = new JButton("Browse...");
 		this.btnDESInput.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
+				
 				fc.setSelectedFile(new File(""));
 				int returnValue = fc.showOpenDialog(panelDES);
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -207,11 +221,13 @@ public class BGui {
 		this.btnDESOutput = new JButton("Browse...");
 		this.btnDESOutput.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				fc.setSelectedFile(new File("output"));
 				int returnValue = fc.showSaveDialog(panelDES);
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
 					txtDESOutput.setText(fc.getSelectedFile().getPath());
 				}
+				
 			}
 		});
 		this.btnDESOutput.setBounds(332, 148, 89, 23);
@@ -239,21 +255,120 @@ public class BGui {
 		this.lblSecretKey.setBounds(12, 12, 136, 14);
 		this.panelDES.add(this.lblSecretKey);
 
-		this.txtKey = new JTextField();
-		this.txtKey.setText("this is secret key");
-		this.txtKey.setColumns(10);
-		this.txtKey.setBounds(12, 29, 302, 20);
-		this.panelDES.add(this.txtKey);
+		this.txtDESKey = new JTextField();
+		this.txtDESKey.setText("this is des secret key");
+		this.txtDESKey.setColumns(10);
+		this.txtDESKey.setBounds(12, 29, 302, 20);
+		this.panelDES.add(this.txtDESKey);
 
 		this.btnDESKeyGenerate = new JButton("Generate");
 		this.btnDESKeyGenerate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String key = btnDESGenKey_onClick();
-				txtKey.setText(key);
+				txtDESKey.setText(key);
 			}
 		});
 		this.btnDESKeyGenerate.setBounds(332, 28, 89, 23);
 		this.panelDES.add(this.btnDESKeyGenerate);
+		
+				this.panelAES = new JPanel();
+				this.tabbedPane.addTab("AES", null, this.panelAES, null);
+				this.panelAES.setLayout(null);
+				
+				this.label_2 = new JLabel("Secret Key");
+				this.label_2.setBounds(12, 12, 136, 14);
+				this.panelAES.add(this.label_2);
+				
+				this.txtAESKey = new JTextField();
+				this.txtAESKey.setText("this is aes secret key");
+				this.txtAESKey.setColumns(10);
+				this.txtAESKey.setBounds(12, 29, 302, 20);
+				this.panelAES.add(this.txtAESKey);
+				
+				this.button_4 = new JButton("Generate");
+				this.button_4.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+						String key = btnDESGenKey_onClick();
+						txtAESKey.setText(key);
+						
+					}
+				});
+				this.button_4.setBounds(332, 28, 89, 23);
+				this.panelAES.add(this.button_4);
+				
+				this.txtAESInput = new JTextField();
+				this.txtAESInput.setColumns(10);
+				this.txtAESInput.setBounds(12, 90, 302, 20);
+				this.panelAES.add(this.txtAESInput);
+				
+				this.label_4 = new JLabel("File Input");
+				this.label_4.setBounds(12, 73, 136, 14);
+				this.panelAES.add(this.label_4);
+				
+				this.label_5 = new JLabel("File Output");
+				this.label_5.setBounds(12, 132, 70, 14);
+				this.panelAES.add(this.label_5);
+				
+				this.txtAESOutput = new JTextField();
+				this.txtAESOutput.setColumns(10);
+				this.txtAESOutput.setBounds(12, 149, 302, 20);
+				this.panelAES.add(this.txtAESOutput);
+				
+				this.button_5 = new JButton("Browse...");
+				this.button_5.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+						fc.setSelectedFile(new File("output"));
+						int returnValue = fc.showSaveDialog(panelAES);
+						if (returnValue == JFileChooser.APPROVE_OPTION) {
+							txtAESOutput.setText(fc.getSelectedFile().getPath());
+						}
+						
+					}
+				});
+				this.button_5.setBounds(332, 148, 89, 23);
+				this.panelAES.add(this.button_5);
+				
+				this.button_6 = new JButton("Browse...");
+				this.button_6.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+						fc.setSelectedFile(new File(""));
+						int returnValue = fc.showOpenDialog(panelAES);
+						if (returnValue == JFileChooser.APPROVE_OPTION) {
+							String filePath = fc.getSelectedFile().getPath();
+							txtAESInput.setText(filePath);
+							String fileOut = filePath + ".out";
+							txtAESOutput.setText(fileOut);
+						}
+						
+					}
+				});
+				this.button_6.setBounds(332, 89, 89, 23);
+				this.panelAES.add(this.button_6);
+				
+				this.btnAESEncrypt = new JButton("Encrypt");
+				this.btnAESEncrypt.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+						btnAESEncypt_onClick();
+						
+					}
+				});
+				this.btnAESEncrypt.setBounds(192, 210, 77, 23);
+				this.panelAES.add(this.btnAESEncrypt);
+				
+				this.btnAESDecrypt = new JButton("Decrypt");
+				this.btnAESDecrypt.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+						btnAESDecypt_onClick();
+						
+					}
+				});
+				this.btnAESDecrypt.setBounds(296, 210, 78, 23);
+				this.panelAES.add(this.btnAESDecrypt);
 
 		this.panelRSA = new JPanel();
 		this.tabbedPane.addTab("RSA", null, this.panelRSA, null);
@@ -421,7 +536,7 @@ public class BGui {
 		this.btnRSASign.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				//btnRSASign_onClick();
+				btnRSASign_onClick();
 				
 			}
 		});
@@ -432,37 +547,65 @@ public class BGui {
 		this.tabbedPane_2.addTab("Verify Signature", null, this.panelRSASignatureVerify, null);
 		this.panelRSASignatureVerify.setLayout(null);
 		
-		this.lblSignatureFileInput = new JLabel("Signature File Input");
+		this.lblSignatureFileInput = new JLabel("Original File Input");
 		this.lblSignatureFileInput.setBounds(12, 12, 136, 14);
 		this.panelRSASignatureVerify.add(this.lblSignatureFileInput);
 		
-		this.textField = new JTextField();
-		this.textField.setColumns(10);
-		this.textField.setBounds(12, 28, 302, 20);
-		this.panelRSASignatureVerify.add(this.textField);
+		this.txtRSASignatureVerifyOriginInput = new JTextField();
+		this.txtRSASignatureVerifyOriginInput.setColumns(10);
+		this.txtRSASignatureVerifyOriginInput.setBounds(12, 28, 302, 20);
+		this.panelRSASignatureVerify.add(this.txtRSASignatureVerifyOriginInput);
 		
-		this.textField_3 = new JTextField();
-		this.textField_3.setColumns(10);
-		this.textField_3.setBounds(12, 87, 302, 20);
-		this.panelRSASignatureVerify.add(this.textField_3);
+		this.txtRSASignatureVerifyInput = new JTextField();
+		this.txtRSASignatureVerifyInput.setColumns(10);
+		this.txtRSASignatureVerifyInput.setBounds(12, 87, 302, 20);
+		this.panelRSASignatureVerify.add(this.txtRSASignatureVerifyInput);
 		
-		this.lblOriginalFileInput = new JLabel("Original File Input");
+		this.lblOriginalFileInput = new JLabel("Signature File Input");
 		this.lblOriginalFileInput.setBounds(12, 71, 186, 14);
 		this.panelRSASignatureVerify.add(this.lblOriginalFileInput);
 		
 		this.button = new JButton("Browse...");
+		this.button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				fc.setSelectedFile(new File(""));
+				int returnValue = fc.showOpenDialog(panelRSA);
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					String filePath = fc.getSelectedFile().getPath();
+					txtRSASignatureVerifyInput.setText(filePath);
+				}
+			}
+		});
 		this.button.setBounds(332, 86, 89, 23);
 		this.panelRSASignatureVerify.add(this.button);
 		
 		this.button_3 = new JButton("Browse...");
+		this.button_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				fc.setSelectedFile(new File(""));
+				int returnValue = fc.showOpenDialog(panelRSA);
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					String filePath = fc.getSelectedFile().getPath();
+					txtRSASignatureVerifyOriginInput.setText(filePath);
+					String fileOut = filePath + ".signed";
+					txtRSASignatureVerifyInput.setText(fileOut);
+				}
+			}
+		});
 		this.button_3.setBounds(332, 27, 89, 23);
 		this.panelRSASignatureVerify.add(this.button_3);
 		
-		this.button_4 = new JButton("Sign");
-		this.button_4.setBounds(164, 121, 77, 23);
-		this.panelRSASignatureVerify.add(this.button_4);
+		this.btnRSAVerify = new JButton("Verify");
+		this.btnRSAVerify.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				btnRSAVerify_onClick();
+			}
+		});
+		this.btnRSAVerify.setBounds(164, 121, 77, 23);
+		this.panelRSASignatureVerify.add(this.btnRSAVerify);
 		
-		this.lblYourRsaPrivate = new JLabel("Your RSA Key Location");
+		this.lblYourRsaPrivate = new JLabel("RSA Key Location");
 		this.lblYourRsaPrivate.setBounds(12, 12, 302, 14);
 		this.panelRSASignature.add(this.lblYourRsaPrivate);
 		
@@ -505,7 +648,7 @@ public class BGui {
 		this.panelRSAKeyGen.add(this.label_3);
 
 		this.txtRSAKeyGenKeyFolder = new JTextField();
-		this.txtRSAKeyGenKeyFolder.setText("C:\\Users\\Kiss\\Desktop");
+		this.txtRSAKeyGenKeyFolder.setText(DESKTOP_PATH);
 		this.txtRSAKeyGenKeyFolder.setColumns(10);
 		this.txtRSAKeyGenKeyFolder.setBounds(39, 106, 224, 20);
 		this.panelRSAKeyGen.add(this.txtRSAKeyGenKeyFolder);
@@ -551,9 +694,6 @@ public class BGui {
 		this.btnRSAKeyGenerate.setBounds(155, 167, 98, 26);
 		this.panelRSAKeyGen.add(this.btnRSAKeyGenerate);
 
-		this.panelSomeAlg = new JPanel();
-		this.tabbedPane.addTab("3rd Alg", null, this.panelSomeAlg, null);
-
 		this.lblStatus = new JLabel("status");
 		this.lblStatus.setBounds(10, 313, 315, 16);
 		this.frmBcrypter.getContentPane().add(this.lblStatus);
@@ -565,12 +705,17 @@ public class BGui {
 		this.menuBar.add(this.mnProgram);
 
 		this.mntmExit = new JMenuItem("Exit");
+		this.mntmExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
 		this.mnProgram.add(this.mntmExit);
 	}
 
 
 	private boolean isDESInputValid() {
-		if (txtKey.getText().length() < 8) {
+		if (txtDESKey.getText().length() < 8) {
 			JOptionPane.showConfirmDialog(panelDES,
 					"Secret Key must be at least 8 character!", "Error",
 					JOptionPane.PLAIN_MESSAGE);
@@ -586,8 +731,7 @@ public class BGui {
 		}
 		String outputDir = txtDESOutput.getText().substring(
 				0,
-				txtDESOutput.getText().lastIndexOf(
-						System.getProperty("file.separator")));
+				txtDESOutput.getText().lastIndexOf(FILE_SEPARATOR));
 		if (!new File(outputDir).isDirectory()) {
 			JOptionPane.showConfirmDialog(panelDES, "Output file is invalid!",
 					"Error", JOptionPane.PLAIN_MESSAGE);
@@ -602,7 +746,7 @@ public class BGui {
 		if (!isDESInputValid())
 			return;
 		try {
-			DES.getInstance().init(txtKey.getText());
+			DES.getInstance().init(txtDESKey.getText());
 			DES.getInstance().encrypt(
 					new FileInputStream(new File(txtDESInput.getText())),
 					new FileOutputStream(new File(txtDESOutput.getText())));
@@ -620,7 +764,7 @@ public class BGui {
 		if (!isDESInputValid())
 			return;
 		try {
-			DES.getInstance().init(txtKey.getText());
+			DES.getInstance().init(txtDESKey.getText());
 			DES.getInstance().decrypt(
 					new FileInputStream(new File(txtDESInput.getText())),
 					new FileOutputStream(new File(txtDESOutput.getText())));
@@ -764,7 +908,7 @@ public class BGui {
 		}
 		if (length < 512 || length > 16384) {
 			JOptionPane.showConfirmDialog(panelRSA,
-					"Key length must be a number between 512 and 1024!",
+					"Key length must be a number between 512 and 16384!",
 					"Invalid key length", JOptionPane.PLAIN_MESSAGE);
 			lblStatus.setText("Error: Key length is out of range!");
 			return false;
@@ -825,14 +969,83 @@ public class BGui {
 			}
 
 			try {
-				RSA.getInstance().encrypt(key,
+				RSA.getInstance().sign(key,
 						new FileInputStream(txtRSASignatureInput.getText()),
-						new FileOutputStream(txtRSASignatureOutput.getText()));//not right just md5 this
+						new FileOutputStream(txtRSASignatureOutput.getText()));
 
-				// if (rdbtnForCrypting.isSelected())
 				lblStatus.setText("Signing successful!");
-				// else
-				// lblStatus.setText("Signing document successful!");
+			} catch (InvalidKeyException | IOException e) {
+				JOptionPane.showConfirmDialog(panelRSA,
+						"Un error has occured: " + e.getMessage(), "Error",
+						JOptionPane.PLAIN_MESSAGE);
+				lblStatus.setText("Error while signing!");
+				e.printStackTrace();
+			}
+		}		
+	}
+	
+	private boolean isRSAVerifyInputValid(){
+		if (!new File(txtRSASignatureKey.getText()).exists()){
+			JOptionPane.showConfirmDialog(panelRSA,
+					"Your RSA key is invalid",
+					"Error", JOptionPane.PLAIN_MESSAGE);
+			lblStatus.setText("Error: Invalid key");
+			return false;
+		}
+		
+		if (!new File(txtRSASignatureVerifyOriginInput.getText()).exists()){
+			JOptionPane.showConfirmDialog(panelRSA,
+					"Your origin file is unexist!",
+					"Error", JOptionPane.PLAIN_MESSAGE);
+			lblStatus.setText("Error: File not found");
+			return false;
+		}
+		
+		if (!new File(txtRSASignatureVerifyInput.getText()).exists()){
+			JOptionPane.showConfirmDialog(panelRSA,
+					"Your signature file is unexist!",
+					"Error", JOptionPane.PLAIN_MESSAGE);
+			lblStatus.setText("Error: File not found");
+			return false;
+		}
+		
+		
+		return true;
+	}
+
+	private void btnRSAVerify_onClick() {
+		if (isRSAVerifyInputValid()){
+			Key key;
+			try {
+				key = RSA.getInstance().readPublicKey(txtRSASignatureKey.getText());
+			} catch (IOException | InvalidKeySpecException
+					| NoSuchAlgorithmException e) {
+				JOptionPane.showConfirmDialog(panelRSA,
+						"Your key is not a RSA public key", "Error",
+						JOptionPane.PLAIN_MESSAGE);
+				lblStatus.setText("Error: Invalid RSA key!");
+				e.printStackTrace();
+				return;
+			}
+			
+			try {
+				boolean match = RSA.getInstance().verify(key,
+						new FileInputStream(txtRSASignatureVerifyInput.getText()),
+						new FileInputStream(txtRSASignatureVerifyOriginInput.getText()));
+				if (match){
+					JOptionPane.showConfirmDialog(panelRSA,
+							"Origin file and signature match!", "Info",
+							JOptionPane.PLAIN_MESSAGE);
+					lblStatus.setText("Verify OK!");
+				}
+				else{
+					JOptionPane.showConfirmDialog(panelRSA,
+							"Origin file and signature mismatch!!!\n" +
+							"Maybe some files are damaged or the signature doesn't belong to the original file.", "Info",
+							JOptionPane.PLAIN_MESSAGE);
+					lblStatus.setText("Verify Mismatch!!!");
+				}
+				
 			} catch (InvalidKeyException | IOException e) {
 				JOptionPane.showConfirmDialog(panelRSA,
 						"Un error has occured: " + e.getMessage(), "Error",
@@ -841,6 +1054,70 @@ public class BGui {
 				e.printStackTrace();
 			}
 		}
-		
 	}
+	
+	private boolean isAESInputValid(){
+//		if (txtAESKey.getText().length() < 8) {
+//			JOptionPane.showConfirmDialog(panelDES,
+//					"Secret Key must be at least 8 character!", "Error",
+//					JOptionPane.PLAIN_MESSAGE);
+//			lblStatus.setText("Error: Key is invalid!");
+//			return false;
+//		}
+
+		if (!new File(txtAESInput.getText()).exists()) {
+			JOptionPane.showConfirmDialog(panelAES, "Input file is invalid!",
+					"Error", JOptionPane.PLAIN_MESSAGE);
+			lblStatus.setText("Error: Input file is invalid!");
+			return false;
+		}
+		String outputDir = txtAESOutput.getText().substring(
+				0,
+				txtAESOutput.getText().lastIndexOf(FILE_SEPARATOR));
+		if (!new File(outputDir).isDirectory()) {
+			JOptionPane.showConfirmDialog(panelAES, "Output file is invalid!",
+					"Error", JOptionPane.PLAIN_MESSAGE);
+			lblStatus.setText("Error: Output file is invalid!");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private void btnAESEncypt_onClick(){
+		if (!isAESInputValid())
+			return;
+		try {
+			AES.getInstance().init(txtAESKey.getText());
+			AES.getInstance().encrypt(
+					new FileInputStream(new File(txtAESInput.getText())),
+					new FileOutputStream(new File(txtAESOutput.getText())));
+
+			lblStatus.setText("Encryption successful!");
+		} catch (IOException e) {
+			JOptionPane.showConfirmDialog(panelAES, "Un error has occured: " + e.getMessage(),
+					"Error", JOptionPane.PLAIN_MESSAGE);
+			lblStatus.setText("Error!");
+			e.printStackTrace();
+		}
+	}
+	
+	private void btnAESDecypt_onClick(){
+		if (!isAESInputValid())
+			return;
+		try {
+			AES.getInstance().init(txtAESKey.getText());
+			AES.getInstance().decrypt(
+					new FileInputStream(new File(txtAESInput.getText())),
+					new FileOutputStream(new File(txtAESOutput.getText())));
+
+			lblStatus.setText("Decryption successful!");
+		} catch (IOException e) {
+			JOptionPane.showConfirmDialog(panelAES, "Un error has occured: " + e.getMessage(),
+					"Error", JOptionPane.PLAIN_MESSAGE);
+			lblStatus.setText("Error!");
+			e.printStackTrace();
+		}
+	}
+	
 }
